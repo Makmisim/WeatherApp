@@ -37,7 +37,7 @@ class MainFragment : Fragment() {
    }
 
     private fun checkPermission(){
-        if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)){
+        if (!isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)){
             permissionListener()
             pLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
