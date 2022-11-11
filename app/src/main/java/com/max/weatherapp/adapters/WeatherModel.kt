@@ -2,7 +2,7 @@ package com.max.weatherapp.adapters
 
 data class WeatherModel(
     val city: String,
-    val time: String,
+    val date: String,
     val condition: String,
     val imageUrl: String,
     val currentTemp: String,
