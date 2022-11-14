@@ -1,20 +1,26 @@
 package com.max.weatherapp.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.max.weatherapp.MainViewModel
 import com.max.weatherapp.R
 import com.max.weatherapp.adapters.WeatherAdapter
 import com.max.weatherapp.adapters.WeatherModel
 import com.max.weatherapp.databinding.FragmentHoursBinding
+import org.json.JSONArray
+import org.json.JSONObject
 
 class HoursFragment : Fragment() {
 
     private lateinit var binding: FragmentHoursBinding
     private lateinit var adapter: WeatherAdapter
+    private val model: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,27 +33,36 @@ class HoursFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRcView()
+        model.liveDataCurrent.observe(viewLifecycleOwner) {
+            Log.d("MyLog", "Hours: ${it.hours}")
+            adapter.submitList(getHoursList(it))
+        }
     }
 
     private fun initRcView() = with(binding) {
-        rcView.layoutManager = LinearLayoutManager(activity)
         adapter = WeatherAdapter()
+        rcView.layoutManager = LinearLayoutManager(activity)
         rcView.adapter = adapter
-        val list = listOf(
-            WeatherModel(
-                "Усть Джегута", "13:00", "Солнечно", "", "+20°", "", "", ""
-            ),
-            WeatherModel(
-                "Усть Джегута", "14:00", "Солнечно", "", "+21°", "", "", ""
-            ),
-            WeatherModel(
-                "Усть Джегута", "15:00", "Солнечно", "", "+22°", "", "", ""
-            ),
-            WeatherModel(
-                "Усть Джегута", "16:00", "Солнечно", "", "+23°", "", "", ""
+
+    }
+
+    private fun getHoursList(it: WeatherModel): List<WeatherModel> {
+        val hoursArray = JSONArray(it.hours)
+        val list = ArrayList<WeatherModel>()
+        for (i in 0 until hoursArray.length()) {
+            val item = WeatherModel(
+                it.city,
+                (hoursArray[i] as JSONObject).getString("time"),
+                (hoursArray[i] as JSONObject).getJSONObject("condition").getString("text"),
+                (hoursArray[i] as JSONObject).getJSONObject("condition").getString("icon"),
+                (hoursArray[i] as JSONObject).getString("temp_c"),
+                "",
+                "",
+                ""
             )
-        )
-        adapter.submitList(list)
+            list.add(item)
+        }
+        return list
     }
 
     companion object {
