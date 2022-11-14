@@ -126,7 +126,7 @@ class MainFragment : Fragment() {
         val list = ArrayList<WeatherModel>()
         val daysArray = mainObject.getJSONObject("forecast").getJSONArray("forecastday")
         val name = mainObject.getJSONObject("location").getString("name")
-        for (i in 1 until daysArray.length()) {
+        for (i in 0 until daysArray.length()) {
             val day = daysArray[i] as JSONObject
             val item = WeatherModel(
                 name,
